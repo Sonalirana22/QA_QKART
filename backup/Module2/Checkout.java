@@ -44,8 +44,7 @@ public class Checkout {
             return true;
 
 
-            //return false;
-        
+            ///return false;
         } catch (Exception e) {
             System.out.println("Exception occurred while entering address: " + e.getMessage());
             return false;

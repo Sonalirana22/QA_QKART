@@ -46,16 +46,8 @@ public class Login {
         // Click the login Button
         login_button.click();
 
-        // SLEEP_STMT_13: Wait for Login to Complete
         // Wait for Login action to complete
-        //Thread.sleep(5000);
-
-        FluentWait<RemoteWebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(30)) // Maximum wait time of 30 seconds
-                .pollingEvery(Duration.ofMillis(250)) // Check every 250 ms
-                .ignoring(org.openqa.selenium.NoSuchElementException.class);
-
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("loginButton")));
+        Thread.sleep(5000);
 
         return this.VerifyUserLoggedIn(Username);
     }

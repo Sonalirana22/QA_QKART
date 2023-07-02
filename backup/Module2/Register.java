@@ -64,9 +64,6 @@ public class Register {
         // Wait for registration to complete
         Thread.sleep(3000);
 
-        // SLEEP_STMT_06: Wait for new user to get created in the backend
-       // WebDriverWait wait = new WebDriverWait(driver, 30, 5000); // Wait for a maximum of 10 seconds
-        // wait.until(ExpectedConditions.urlContains("login"));
 
         this.lastGeneratedUsername = test_data_username;
 
