@@ -509,6 +509,7 @@ public class QkartSanity {
         List<String> expectedResult = Arrays.asList("YONEX Smash Badminton Racquet");
 
         logStatus("Start TestCase", "Test Case 8: Add Test Case for Multitab Scenario", "DONE");
+        takeScreenshot(driver, "StartTestCase", "TestCase08");
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         Register registration = new Register(driver);
         registration.navigateToRegisterPage();
@@ -527,8 +528,6 @@ public class QkartSanity {
         ((JavascriptExecutor) driver).executeScript("window.open();");
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(1));
-
-        // tabs.get("wwww.google.com")
         driver.get("https://crio-qkart-frontend-qa.vercel.app/");
         Thread.sleep(5000);
 
@@ -537,80 +536,78 @@ public class QkartSanity {
         Thread.sleep(2000);
         logStatus("End TestCase", "Test Case 8:Test Case for Multitab Scenario:",
                 status ? "PASS" : "FAIL");
+                takeScreenshot(driver, "EndTestCase", "TestCase08");
 
 
         return status;
     }
 
     public static Boolean TestCase09(RemoteWebDriver driver) throws InterruptedException {
-        // TODO: CRIO_TASK_MODULE_SYNCHRONISATION -
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-    String originalHandle = driver.getWindowHandle();
-    Set<String> windowHandles = driver.getWindowHandles();
+    Boolean status = false;
+    // TODO: CRIO_TASK_MODULE_SYNCHRONISATION -
+    //WebDriverWait wait = new WebDriverWait(driver, 10);
+    //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
     logStatus("Start TestCase", "Test Case 9: Verify Privacy Policy and Terms of Service", "DONE");
-
+    takeScreenshot(driver, "StartTestCase", "TestCase09");
     Home homePage = new Home(driver);
     homePage.navigateToHome();
 
-    WebElement privacyPolicyLink = wait.until(ExpectedConditions.presenceOfElementLocated(
-            By.xpath("//*[@id='root']/div/div/div[5]/div[2]/p[1]/a")));
-    String homePageUrl = driver.getCurrentUrl();
+    driver.findElement(By.xpath("//*[@id='root']/div/div/div[4]/div[2]/p[1]/a")).click();;
+   
+    String originalUrl = driver.getCurrentUrl();
 
-    privacyPolicyLink.click();
-    
-    switchToNewTab(driver, originalHandle);
+    ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+    driver.switchTo().window(tabs.get(1));
+
     Thread.sleep(3000);
-    Boolean isPrivacyPolicyDisplayed = driver.getPageSource().contains("Privacy Policy");
-    logStatus("Privacy Policy Content", "Privacy Policy is displayed", isPrivacyPolicyDisplayed ? "PASS" : "FAIL");
 
-    driver.switchTo().window(originalHandle);
-    logStatus("Switch to Original Tab", "Moved back to the original tab", "PASS");
+    Boolean privacyPolicyDisplayed = driver.findElement(By.tagName("body")).getText().contains("Privacy policy");
+    logStatus("Privacy Policy Content", "Privacy Policy is displayed", privacyPolicyDisplayed ? "PASS" : "FAIL");
+    driver.close();
+    driver.switchTo().window(tabs.get(0));
+    //Thread.sleep(3000);
 
-    WebElement termsOfServiceLink = wait.until(ExpectedConditions.presenceOfElementLocated(
-            By.xpath("//*[@id='root']/div/div/div[5]/div[2]/p[4]/a")));
-    termsOfServiceLink.click();
-    switchToNewTab(driver, originalHandle);
+    //driver.findElement(By.xpath("//*[@id='root']/div/div/div[4]/div[2]/p[4]/a")).click();
+    WebDriverWait wait = new WebDriverWait(driver, 10);
+    WebElement termsOfService = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(text(),'Terms of Service')]")));
+    
+    termsOfService.click();
+    
+    String newUrl = driver.getCurrentUrl();
+    if (originalUrl.equals(newUrl)) {
+        System.out.println("URL of the current tab does not change");
+    }
 
-    Boolean isAboutUsDisplayed = driver.getPageSource().contains("About us");
-    logStatus("About Us Content", "About Us page is displayed", isAboutUsDisplayed ? "PASS" : "FAIL");
+    tabs = new ArrayList<>(driver.getWindowHandles());
+    driver.switchTo().window(tabs.get(1));
+    
+    Boolean aboutUsDisplayed = driver.findElement(By.xpath("//a[contains(text(),'About us')]")).getText().contains("About us");
+
+    driver.close();
+
+    driver.switchTo().window(tabs.get(0));
+
+    logStatus("About Us Content", "About Us page is displayed", aboutUsDisplayed ? "PASS" : "FAIL");
+
+    if (privacyPolicyDisplayed && aboutUsDisplayed) {
+        status = true;
+    } else {
+        status = false;
+    }
 
     logStatus("End TestCase", "Test Case 9: Verify Privacy Policy and Terms of Service", "PASS");
-
-    closeAllNewTabs(driver, originalHandle);
-
-    return isPrivacyPolicyDisplayed && isAboutUsDisplayed;
-}
-
-public static void switchToNewTab(RemoteWebDriver driver, String originalHandle) {
-    Set<String> windowHandles = driver.getWindowHandles();
-    for (String handle : windowHandles) {
-        if (!handle.equals(originalHandle)) {
-            driver.switchTo().window(handle);
-            break;
-        }
-    }
-}
-
-public static void closeAllNewTabs(RemoteWebDriver driver, String originalHandle) {
-    Set<String> windowHandles = driver.getWindowHandles();
-    for (String handle : windowHandles) {
-        if (!handle.equals(originalHandle)) {
-            driver.switchTo().window(handle);
-            driver.close();
-        }
-    }
-    driver.switchTo().window(originalHandle);
+    takeScreenshot(driver, "EndTestCase", "TestCase09");
+    
+    return status;
     }
 
     public static Boolean TestCase10(RemoteWebDriver driver) throws InterruptedException {
         Boolean status = false;
         // TODO: CRIO_TASK_MODULE_SYNCHRONISATION -
         logStatus("Start TestCase", "Test Case 10: Verify Contact Us Link", "DONE");
-
-        // Visit QKart home page
+        takeScreenshot(driver, "StartTestCase", "TestCase10");
+    
         driver.get("https://crio-qkart-frontend-qa.vercel.app/");
     
     
@@ -620,36 +617,26 @@ public static void closeAllNewTabs(RemoteWebDriver driver, String originalHandle
             ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
             Thread.sleep(2000);
 
-            // Click on the "Contact us" link in the footer
-            WebElement contactUsLink = driver.findElement(By.xpath("//*[@id='root']/div/div/div[5]/div[2]/p[3]"));
-            contactUsLink.click();
+            
+            driver.findElement(By.xpath("//*[@id='root']/div/div/div[5]/div[2]/p[3]")).click();
+            driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[2]/div[1]/div/input")).sendKeys("crio user");
+            driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[2]/div[2]/div/input")).sendKeys("criouser@gmail.com");
+            driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[3]/input")).sendKeys("Testing the contact us page");
+            WebElement contactnow = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[4]/div/button"));
+            contactnow.click();
+           // Thread.sleep(2000);
 
-            // Enter the name, email, and message in the contact form
-            WebElement nameField = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[2]/div[1]/div/input"));
-            nameField.sendKeys("crio user");
+           WebDriverWait wait = new WebDriverWait(driver, 10);
+           boolean ContactNowClosed = wait.until(ExpectedConditions.invisibilityOf(contactnow));
 
-            WebElement emailField = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[2]/div[2]/div/input"));
-            emailField.sendKeys("criouser@gmail.com");
-
-            WebElement messageField = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[3]/input"));
-            messageField.sendKeys("Testing the contact us page");
-
-            // Click on the "Contact Now" button
-            WebElement contactNowButton = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div/section/div/div/div/form/div/div/div[4]/div/button"));
-            contactNowButton.click();
-
-            // Wait for the contact now dialog to close
-            Thread.sleep(2000);
-
-            // Confirm that the contact now dialog is closed
-            boolean isContactNowDialogClosed = driver.findElements(By.className("modal-content")).isEmpty();
-            if (isContactNowDialogClosed) {
+            if (ContactNowClosed) {
                 status = true;
             } else {
                 status = false;
             }
             logStatus("End TestCase", "Test Case 10: Contact now dialog closed successfully:",
                 status ? "PASS" : "FAIL");
+                takeScreenshot(driver, "EndTestCase", "TestCase10");
         return status;
     }
 
@@ -657,6 +644,7 @@ public static void closeAllNewTabs(RemoteWebDriver driver, String originalHandle
         Boolean status = false;
         // TODO: CRIO_TASK_MODULE_SYNCHRONISATION -
         logStatus("Start TestCase", "Test Case 11: Verify ads in the thanks page:", "DONE");
+        takeScreenshot(driver, "StartTestCase", "TestCase11");
         Register registration = new Register(driver);
         registration.navigateToRegisterPage();
         registration.registerUser("testUser", "abc@123", true);
@@ -683,49 +671,39 @@ public static void closeAllNewTabs(RemoteWebDriver driver, String originalHandle
 
         //driver.get("https://crio-qkart-frontend-qa.vercel.app/thanks");
 
-        int adCardCount = driver.findElements(By.className("ad-card")).size();
-        int qkartProductAdsCount = driver.findElements(By.className("product-ad-card")).size();
-        int coronaStatsAdsCount = driver.findElements(By.className("corona-ad-card")).size();
+        String currentURL = driver.getCurrentUrl();
+        List<WebElement> ads = driver.findElements(By.xpath("//iframe"));
 
-        boolean areAdsDisplayed = adCardCount == 3 && qkartProductAdsCount == 2 && coronaStatsAdsCount == 1;
-        if (!areAdsDisplayed) {
+        if(ads.size() == 3){
             status = true;
             System.out.println("Ads are displayed on the Thanks page");
-        } else {
+        }else{
             System.out.println("Ads are not displayed on the Thanks page as expected");
         }
 
-        // Ensure that the buttons on the 2 QKART product advertisements are clickable
-        List<WebElement> qkartProductAdButtons = driver.findElements(By.xpath("//*[@id='root']/div/div[2]/div/iframe"));
-        boolean areButtonsClickable = true;
-
-        
-           // Click the first ad button
-           qkartProductAdButtons.get(0).click();
-           // Switch to the opened frame
-           driver.switchTo().frame(0);
-           // Perform actions within the frame
-           driver.switchTo().defaultContent();
-   
-           // Click the second ad button
-           qkartProductAdButtons.get(1).click();
-           // Switch to the new opened frame
-           driver.switchTo().frame(1);
-           // Perform actions within the frame
-           WebElement buyNowButton = driver.findElement(By.xpath("//button[contains(text(),'Buy Now')]"));
-           buyNowButton.click();
-        // Switch back to the parent frame
+        WebElement ad1 = driver.findElement(By.xpath("//*[@id='root']/div/div[2]/div/iframe[1]"));
+        driver.switchTo().frame(ad1);
+        driver.findElement(By.xpath("//Button[text()='Buy Now']")).click();
+        Thread.sleep(3000);
         driver.switchTo().parentFrame();
 
-        if (areButtonsClickable) {
-            status=true;
-        } else {
-            status=false;
-        }
+        if(!driver.getCurrentUrl().equals("https://crio-qkart-frontend-qa.vercel.app/thanks"))
+             driver.get(currentURL);
 
+        Thread.sleep(3000);    
 
+        WebElement ad2 = driver.findElement(By.xpath("//*[@id='root']/div/div[2]/div/iframe[2]"));
+        driver.switchTo().frame(ad2);
+        driver.findElement(By.xpath("//Button[text()='Buy Now']")).click();
+        Thread.sleep(3000);
+        driver.switchTo().parentFrame();
+
+        if(driver.getCurrentUrl().equals(currentURL))
+            return status= true;
+       
         logStatus("End TestCase", "Test Case 11: Buttons on the QKART product advertisements are clickable:",
                 status ? "PASS" : "FAIL");
+                takeScreenshot(driver, "EndTestCase", "TestCase11");
         return status;
     }
 
