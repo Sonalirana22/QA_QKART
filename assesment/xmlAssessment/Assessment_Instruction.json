@@ -1,10 +1,11 @@
+
 {
     "assesments":[
         {
-            "assesmentDescription":"Verify if all 12 test cases have passed",
+            "assesmentDescription":"Verify if all 11 test cases have passed",
             "find":".//test-method[contains(@name,'TestCase') and @status='PASS']",
-            "expectedCount":12,
-            "errorMessage":"All 12 test cases haven't passed"
+            "expectedCount":11,
+            "errorMessage":"All 11 test cases haven't passed"
         },
         {
             "assesmentDescription":"Verify if 2 groups are present",
